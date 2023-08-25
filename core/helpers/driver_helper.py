@@ -1,22 +1,48 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.common import TimeoutException
+from selenium.webdriver.support.select import Select
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+from core.helpers.driver import Driver
 
 
-class Driver:
-    driver = None
+class DriveHelper:
+    def __init__(self):
+        self._driver = Driver().driver
 
-    @staticmethod
-    def get_chrome_driver() -> WebDriver:
-        if Driver.driver is None:
-            Driver.driver = webdriver.Chrome()
-            Driver.driver.maximize_window()
-            Driver.driver.implicitly_wait(5)
-            return Driver.driver
-        else:
-            return Driver.driver
+    def click_element(self, locator):
+        element = WebDriverWait(self._driver, 10).until(
+            EC.element_to_be_clickable(locator)
+        )
+        element.click()
 
-    @staticmethod
-    def close_driver():
-        if Driver.driver is not None:
-            Driver.driver.quit()
-            Driver.driver = None
+    def wait_for_element_to_be_visible(self, locator, timeout=10):
+        try:
+            element = WebDriverWait(self._driver, 10).until(
+                EC.visibility_of_element_located(locator)
+            )
+            return element
+        except TimeoutException:
+            print(
+                f"Element with locator {locator} not visible within {timeout} seconds."
+            )
+            return None
+
+    def send_keys(self, locator, keys_to_send):
+        element = WebDriverWait(self._driver, 10).until(
+            EC.visibility_of_element_located(locator)
+        )
+        element.send_keys(keys_to_send)
+
+    def select_option(self, locator, value):
+        select_element = WebDriverWait(self._driver, 10).until(
+            EC.presence_of_element_located(locator)
+        )
+        select = Select(select_element)
+        select.select_by_visible_text(value)
+
+    def get_element_text(self, locator):
+        element = WebDriverWait(self._driver, 10).until(
+            EC.presence_of_element_located(locator)
+        )
+        return element.text
