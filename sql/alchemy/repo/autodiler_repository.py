@@ -1,5 +1,5 @@
-from sql.models.models import AutodilerModel
-from sql.session import session
+from sql.alchemy.models.models import AutodilerModel
+from sql.alchemy.session import session
 
 
 class AutodilerRepository:

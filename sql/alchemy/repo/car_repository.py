@@ -1,5 +1,5 @@
-from sql.models.models import CarModel
-from sql.session import session
+from sql.alchemy.models.models import CarModel
+from sql.alchemy.session import session
 
 
 class CarRepository:
